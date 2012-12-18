@@ -19,38 +19,61 @@ public class DBalancer {
     //commence Coordinator
     co.start();
   }
-  
-  public void connectToServer(InetAddress IP, int port) throws IOException {
-    Socket server = null;
+  public void start(InetAddress IP, int conPort, int serverPort) {
     
+    this.startClient(IP, conPort);
+ 
+  }
+  
+  private void startClient(InetAddress IP, int port) {
+    Socket server = null;
     try {
-        /* try to open a socket to the server at the given host:port */
         server = new Socket(IP, port);
-    } catch (UnknownHostException e) {
+    } catch (IOException e) {
         System.err.println(e);
         System.exit(1);
     }
 
-    /* obtain an output stream to the server... */
-    PrintWriter out = new PrintWriter(server.getOutputStream(), true);
-    /* ... and an input stream */
-    BufferedReader in = new BufferedReader(new InputStreamReader(
-                server.getInputStream()));
-    /* stdin stream */
+    PrintWriter out = null;
+    BufferedReader in = null;
+    try {
+      out = new PrintWriter(server.getOutputStream(), true);
+      in = new BufferedReader(new InputStreamReader(
+                                server.getInputStream() ));
+    } catch (IOException e1) {
+      System.err.println("Could not create in out buffers");
+      e1.printStackTrace();
+      System.exit(1);
+    }
+    
     BufferedReader stdIn = new BufferedReader(
-            new InputStreamReader(System.in));
-
+                             new InputStreamReader(System.in) );
     String msg;
 
-    /* loop reading messages from stdin, send them to the server 
-     * and read the server's response */
-    while ((msg = stdIn.readLine()) != null) {
-        out.println(msg);
-        System.out.println(in.readLine());
-    }
+    try {
+      while ((msg = stdIn.readLine()) != null) {
+          out.println(msg);
+          System.out.println(in.readLine());
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      out.close();
+      try {
+        in.close();
+      } catch (IOException e) {
+        System.out.println("Could not close out buffer");
+        e.printStackTrace();
+      }
+      System.exit(-2);
+    } 
   }
   
-  
+  public void showLoad() {
+    String load = co.getLoad();
+    System.out.println(load);
+  }
   
   private class Server implements Runnable {
     ServerSocket server;

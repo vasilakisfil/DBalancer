@@ -41,9 +41,8 @@ public class TestDBalancer {
       dBlncr.start(4561);
     }
     else if (mode.equals("Client")) {
-      dBlncr.connectToServer(IP, 4561);
+      dBlncr.start(IP, 4561, 4561);
     }
-
 
     System.exit(0);
   }

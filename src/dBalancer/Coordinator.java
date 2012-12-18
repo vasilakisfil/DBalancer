@@ -22,15 +22,18 @@ public class Coordinator implements Runnable {
 
   
   public void start() {
-    while(true) {
+
       try {
-        Thread.sleep(4000);
+        while(true) {
+          System.out.println("Sleeping");
+          Thread.sleep(4000);
+        }
       } catch (InterruptedException e) {
         System.out.println("Main thread Interrupted");
         e.printStackTrace();
-        break;
+      } finally {
+        System.exit(1);
       }
-    }
   }
   
   public void run() {
@@ -60,6 +63,11 @@ public class Coordinator implements Runnable {
     catch (IOException e) {
       System.err.println(e);
     }
+  }
+  
+  public String getLoad() {
+    String load = "Empty Load";
+    return load;
   }
 
 }
