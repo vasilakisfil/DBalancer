@@ -4,20 +4,24 @@ import java.net.*;
 import java.io.*;
 
 public class DBalancer {
-  Coordinator co;
+  private Coordinator coo;
+  /*private DBalancer copyThis;*/
   
   DBalancer() {
-    co = new Coordinator();
-    
+    coo = new Coordinator();
   }
   
   public void start(int port) {
+    /*copyThis = this;*/
     //commence server
-    Thread t = new Thread(new Server(port));
-    t.start();
-    
+    Thread s = new Thread(new Server(port));
+    s.start();
+	
+	//Thread d = new Thread(new DebugConsole(copyThis);
+    //d.start();
+	
     //commence Coordinator
-    co.start();
+    coo.start();
   }
   public void start(InetAddress IP, int conPort, int serverPort) {
     
@@ -71,18 +75,18 @@ public class DBalancer {
   }
   
   public void showLoad() {
-    String load = co.getLoad();
+    String load = coo.getLoad();
     System.out.println(load);
   }
   
   private class Server implements Runnable {
     ServerSocket server;
-    Socket client;
+    Socket nodeFd;
     int port;
     
     Server(int port) {
       this.server = null;
-      this.client = null;
+      this.nodeFd = null;
       this.port = port; 
     }
     
@@ -97,7 +101,7 @@ public class DBalancer {
   
       while(true) {
         try {
-          client = server.accept();
+          nodeFd = server.accept();
         }
         catch (IOException e) {
           try {
@@ -111,7 +115,7 @@ public class DBalancer {
           System.exit(1);
         }
         /* start a new thread to handle this client */
-        Thread t = new Thread(new Coordinator(client));
+        Thread t = new Thread(new Node(nodeFd, coo));
         t.start();
       }
     }
