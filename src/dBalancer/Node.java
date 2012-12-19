@@ -1,5 +1,8 @@
 package dBalancer;
 
+import java.io.*;
+import java.net.*;
+
 
 
 public class Node implements Runnable {
@@ -7,7 +10,7 @@ public class Node implements Runnable {
   private Coordinator coo;
   private Socket nodeFd;
   
-  Node(nodeFd, coo) {
+  Node(Socket nodeFd, Coordinator coo) {
 	this.nodeFd = nodeFd;
 	this.coo = coo;
   }
@@ -18,9 +21,9 @@ public class Node implements Runnable {
     try {
       /* obtain an input stream to this client ... */
       in = new BufferedReader(new InputStreamReader(
-                                client.getInputStream() ));
+                                nodeFd.getInputStream() ));
 	  /* ... and an output stream to the same client */
-      out = new PrintWriter(client.getOutputStream(), true);
+      out = new PrintWriter(nodeFd.getOutputStream(), true);
     }
     catch (IOException e) {
 	  System.err.println(e);

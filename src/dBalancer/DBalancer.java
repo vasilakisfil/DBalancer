@@ -5,31 +5,32 @@ import java.io.*;
 
 public class DBalancer {
   private Coordinator coo;
-  /*private DBalancer copyThis;*/
   
   DBalancer() {
     coo = new Coordinator();
   }
   
-  public void start(int port) {
-    /*copyThis = this;*/
+  public void start(int port, boolean debug) {
     //commence server
     Thread s = new Thread(new Server(port));
     s.start();
 	
-	//Thread d = new Thread(new DebugConsole(copyThis);
-    //d.start();
+    if (debug) {
+      Thread d = new Thread(new DebugConsole(coo));
+      d.start();
+    }
 	
     //commence Coordinator
     coo.start();
   }
-  public void start(InetAddress IP, int conPort, int serverPort) {
+  
+  public void start(InetAddress IP, int conPort, int serverPort) throws DBlncrException {
     
     this.startClient(IP, conPort);
  
   }
   
-  private void startClient(InetAddress IP, int port) {
+  private void startClient(InetAddress IP, int port) throws DBlncrException {
     Socket server = null;
     try {
         server = new Socket(IP, port);
@@ -47,7 +48,7 @@ public class DBalancer {
     } catch (IOException e1) {
       System.err.println("Could not create in out buffers");
       e1.printStackTrace();
-      System.exit(1);
+      throw new DBlncrException();
     }
     
     BufferedReader stdIn = new BufferedReader(
@@ -70,7 +71,7 @@ public class DBalancer {
         System.out.println("Could not close out buffer");
         e.printStackTrace();
       }
-      System.exit(-2);
+      System.exit(1);
     } 
   }
   
@@ -78,6 +79,9 @@ public class DBalancer {
     String load = coo.getLoad();
     System.out.println(load);
   }
+  
+  
+  
   
   private class Server implements Runnable {
     ServerSocket server;

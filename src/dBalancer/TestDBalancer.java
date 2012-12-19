@@ -38,10 +38,15 @@ public class TestDBalancer {
     IP = InetAddress.getByName(connectValue);
     
     if (mode.equals("Server")) {
-      dBlncr.start(4561);
+      dBlncr.start(4561, true);
     }
     else if (mode.equals("Client")) {
-      dBlncr.start(IP, 4561, 4561);
+      try {
+        dBlncr.start(IP, 4561, 4561);
+      } catch (DBlncrException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
 
     System.exit(0);
