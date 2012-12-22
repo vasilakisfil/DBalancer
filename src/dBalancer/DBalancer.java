@@ -6,7 +6,7 @@ import java.io.*;
 public class DBalancer {
   private Coordinator coo;
   
-  DBalancer() {
+  public DBalancer() {
     coo = new Coordinator();
   }
   
@@ -84,11 +84,11 @@ public class DBalancer {
   
   
   private class Server implements Runnable {
-    ServerSocket server;
-    Socket nodeFd;
-    int port;
+    private ServerSocket server;
+    private Socket nodeFd;
+    private int port;
     
-    Server(int port) {
+    Server(final int port) {
       this.server = null;
       this.nodeFd = null;
       this.port = port; 
@@ -118,7 +118,7 @@ public class DBalancer {
           System.err.println(e);
           System.exit(1);
         }
-        /* start a new thread to handle this client */
+        /* start a new thread to handle the new node */
         Thread t = new Thread(new Node(nodeFd, coo));
         t.start();
       }

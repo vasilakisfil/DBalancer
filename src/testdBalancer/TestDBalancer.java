@@ -1,9 +1,11 @@
-package dBalancer;
+package testdBalancer;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import com.sanityinc.jargs.CmdLineParser;
 import com.sanityinc.jargs.CmdLineParser.Option;
+
+import dBalancer.DBalancer;
 
 
 public class TestDBalancer {

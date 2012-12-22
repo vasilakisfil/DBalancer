@@ -12,7 +12,7 @@ public class Coordinator {
     
   }
   
-  Coordinator(Socket client) {
+  Coordinator(final Socket client) {
       this.client = client;
   }
 

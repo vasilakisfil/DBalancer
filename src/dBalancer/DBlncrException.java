@@ -6,7 +6,7 @@ public class DBlncrException extends Exception {
   public DBlncrException() {
   }
  
-  public DBlncrException(String msg) {
+  public DBlncrException(final String msg) {
     super(msg);
   }
 
