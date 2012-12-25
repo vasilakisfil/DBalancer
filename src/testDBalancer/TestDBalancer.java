@@ -1,4 +1,4 @@
-package testdBalancer;
+package testDBalancer;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -6,6 +6,7 @@ import com.sanityinc.jargs.CmdLineParser;
 import com.sanityinc.jargs.CmdLineParser.Option;
 
 import dBalancer.DBalancer;
+import dBalancer.DBlncrException;
 
 
 public class TestDBalancer {
@@ -40,11 +41,11 @@ public class TestDBalancer {
     IP = InetAddress.getByName(connectValue);
     
     if (mode.equals("Server")) {
-      dBlncr.start(4561, true);
+      dBlncr.start(4561, false);
     }
     else if (mode.equals("Client")) {
       try {
-        dBlncr.start(IP, 4561, 4561);
+        dBlncr.start(IP, 4561, 4551, false);
       } catch (DBlncrException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

@@ -1,7 +1,14 @@
 package dBalancer;
 
 import java.net.*;
+import java.util.Date;
 import java.io.*;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
+import dBalancer.msgProtocol.message.requestmsg.*;
 
 public class DBalancer {
   private Coordinator coo;
@@ -11,7 +18,7 @@ public class DBalancer {
   }
   
   public void start(int port, boolean debug) {
-    //commence server
+    //initiate server
     Thread s = new Thread(new Server(port));
     s.start();
 	
@@ -20,23 +27,36 @@ public class DBalancer {
       d.start();
     }
 	
-    //commence Coordinator
+    //initiate Coordinator
     coo.start();
   }
   
-  public void start(InetAddress IP, int conPort, int serverPort) throws DBlncrException {
+  public void start(InetAddress IP, int conPort, int serverPort, boolean debug) throws DBlncrException {
     
-    this.startClient(IP, conPort);
- 
+    //initialize (retrieve other servers)
+    this.initializeClient(IP, conPort);
+    
+    //initiate server
+    Thread s = new Thread(new Server(serverPort));
+    s.start();
+    
+    if (debug) {
+      Thread d = new Thread(new DebugConsole(coo));
+      d.start();
+    }
+    
+    //initiate Coordinator
+    coo.start();
+    
   }
   
-  private void startClient(InetAddress IP, int port) throws DBlncrException {
+  private void initializeClient(InetAddress IP, int conPort) throws DBlncrException {
     Socket server = null;
     try {
-        server = new Socket(IP, port);
+      server = new Socket(IP, conPort);
     } catch (IOException e) {
-        System.err.println(e);
-        System.exit(1);
+      System.err.println(e);
+      System.exit(1);
     }
 
     PrintWriter out = null;
@@ -51,34 +71,26 @@ public class DBalancer {
       throw new DBlncrException();
     }
     
-    BufferedReader stdIn = new BufferedReader(
-                             new InputStreamReader(System.in) );
-    String msg;
-
+    RequestInfoMessage request = new RequestInfoMessage();
+    out.println(request.build());
+    
     try {
-      while ((msg = stdIn.readLine()) != null) {
-          out.println(msg);
-          System.out.println(in.readLine());
-      }
+      String msg = in.readLine();
+      System.out.println(msg);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
+      System.out.println("Error from Server. Terminating");
       e.printStackTrace();
-    } finally {
-      out.close();
-      try {
-        in.close();
-      } catch (IOException e) {
-        System.out.println("Could not close out buffer");
-        e.printStackTrace();
-      }
       System.exit(1);
-    } 
+    }
+    
   }
   
   public void showLoad() {
     String load = coo.getLoad();
     System.out.println(load);
   }
+  
+
   
   
   
