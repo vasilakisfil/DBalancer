@@ -75,10 +75,9 @@ public class DBalancer {
     out.println(request.build());
     
     try {
-      String msg = in.readLine();
-      System.out.println(msg);
+      request.handle(in.readLine());
     } catch (IOException e) {
-      System.out.println("Error from Server. Terminating");
+      System.err.println("Error from Server. Terminating");
       e.printStackTrace();
       System.exit(1);
     }

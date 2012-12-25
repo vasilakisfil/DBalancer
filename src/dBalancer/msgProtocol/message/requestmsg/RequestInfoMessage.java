@@ -21,11 +21,16 @@ public class RequestInfoMessage implements RequestMessage {
     return this.linate(initRequest.asXML());
   }
   
-  public void handle() {
+  @Override
+  public void handle(final String msg) {
     
   }
   
   private String linate(final String s) {
     return s.replace("\n", "").replace("\r",  "").replace("\r\n",  "");
   }
+
+
+
+
 }
