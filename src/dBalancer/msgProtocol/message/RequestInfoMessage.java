@@ -1,4 +1,4 @@
-package dBalancer.msgProtocol.message.requestmsg;
+package dBalancer.msgProtocol.message;
 
 import java.util.Date;
 
@@ -6,7 +6,15 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-public class RequestInfoMessage implements RequestMessage {
+import dBalancer.Helpers;
+
+public class RequestInfoMessage implements Message {
+  private final Helpers helper;
+  
+  public RequestInfoMessage() {
+    helper = new Helpers();
+  }
+   
 
   @Override
   public String build() {
@@ -16,18 +24,14 @@ public class RequestInfoMessage implements RequestMessage {
     root.addElement("type")
         .addAttribute("timestamp", date.toString())
         .addAttribute("ID", "Client")
-        .addText( "RetrieveInfo" );
+        .addText( "REQUESTINFO" );
     
-    return this.linate(initRequest.asXML());
+    return helper.linate(initRequest.asXML());
   }
   
   @Override
   public void handle(final String msg) {
-    
-  }
-  
-  private String linate(final String s) {
-    return s.replace("\n", "").replace("\r",  "").replace("\r\n",  "");
+    System.out.println(msg);    
   }
 
 

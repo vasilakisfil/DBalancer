@@ -1,14 +1,17 @@
 package dBalancer;
 
-import java.net.*;
-import java.util.Date;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import dBalancer.msgProtocol.message.RequestInfoMessage;
+import dBalancer.msgProtocol.state.Initialize;
 
-import dBalancer.msgProtocol.message.requestmsg.*;
+
 
 public class DBalancer {
   private Coordinator coo;
@@ -51,20 +54,17 @@ public class DBalancer {
   }
   
   private void initializeClient(InetAddress IP, int conPort) throws DBlncrException {
-    Socket server = null;
+    Socket serverSd = null;
     try {
-      server = new Socket(IP, conPort);
+      serverSd = new Socket(IP, conPort);
     } catch (IOException e) {
       System.err.println(e);
       System.exit(1);
     }
 
     PrintWriter out = null;
-    BufferedReader in = null;
     try {
-      out = new PrintWriter(server.getOutputStream(), true);
-      in = new BufferedReader(new InputStreamReader(
-                                server.getInputStream() ));
+      out = new PrintWriter(serverSd.getOutputStream(), true);
     } catch (IOException e1) {
       System.err.println("Could not create in out buffers");
       e1.printStackTrace();
@@ -74,13 +74,14 @@ public class DBalancer {
     RequestInfoMessage request = new RequestInfoMessage();
     out.println(request.build());
     
-    try {
-      request.handle(in.readLine());
-    } catch (IOException e) {
-      System.err.println("Error from Server. Terminating");
-      e.printStackTrace();
-      System.exit(1);
-    }
+    //start new node with specific init state
+    //that handles the incoming response
+    
+    /* start a new thread to handle the new node */
+    
+    
+    Thread t = new Thread(new Node(serverSd, new Initialize() ));
+    t.start();
     
   }
   
@@ -95,28 +96,24 @@ public class DBalancer {
   
   
   private class Server implements Runnable {
-    private ServerSocket server;
-    private Socket nodeFd;
-    private int port;
+    private final ServerSocket server;
+    private final int port;
+    
+    private Socket nodeSd;
     
     Server(final int port) {
-      this.server = null;
-      this.nodeFd = null;
+      this.nodeSd = null;
       this.port = port; 
+      
+      server = this.initServer();
+
     }
     
     public void run() {
-      try {
-        server = new ServerSocket(port); /* start listening on the port */
-      } catch (IOException e) {
-        System.err.println("Could not listen on port: " + port);
-        System.err.println(e);
-        System.exit(1);
-      }
-  
+      
       while(true) {
         try {
-          nodeFd = server.accept();
+          nodeSd = server.accept();
         }
         catch (IOException e) {
           try {
@@ -130,10 +127,20 @@ public class DBalancer {
           System.exit(1);
         }
         /* start a new thread to handle the new node */
-        Thread t = new Thread(new Node(nodeFd, coo));
+        Thread t = new Thread(new Node(nodeSd, null));
         t.start();
       }
     }
-  }
-  
+    
+    private ServerSocket initServer() {
+      try {
+        return new ServerSocket(port); /* start listening on the port */
+      } catch (IOException e) {
+        System.err.println("Could not listen on port: " + port);
+        System.err.println(e);
+        System.exit(1);
+        return null; //compiler necessity
+      }      
+    }    
+  }  
 }

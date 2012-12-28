@@ -5,17 +5,22 @@ import java.net.Socket;
 
 
 public class Coordinator {
-
-  private Socket client;
+  
+  private static Coordinator coo;
+  //private Socket client;
 
   Coordinator() {
+    Coordinator.coo = this;
     
   }
   
   Coordinator(final Socket client) {
-      this.client = client;
+      //this.client = client;
   }
 
+  static public Coordinator getInstance() {
+    return coo;
+  }
   
   public void start() {
 

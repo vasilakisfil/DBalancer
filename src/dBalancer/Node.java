@@ -1,75 +1,68 @@
 package dBalancer;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-
-import dBalancer.msgProtocol.MessageProtocol;
+import dBalancer.msgProtocol.state.StateWrapper;
+import dBalancer.msgProtocol.state.State;
 
 
 
 public class Node implements Runnable {
 
-  private Coordinator coo;
-  private Socket nodeFd;
-  private MessageProtocol msgPrc;
+  @SuppressWarnings("unused")
+  private final Coordinator coo;
+  @SuppressWarnings("unused")
+  private final Socket nodeFd;
+  private final StateWrapper msgPrc;
   
   private BufferedReader in;
   private PrintWriter out;
   
-  Node(final Socket nodeFd, final Coordinator coo) {
+  Node(final Socket nodeFd, final State state) {
 	this.nodeFd = nodeFd;
-	System.out.println(nodeFd.toString());
-	System.out.println("LPort: " + nodeFd.getLocalPort() + "LAddress: " + 
-	                  nodeFd.getLocalAddress());
-    System.out.println("Port: " + nodeFd.getPort() + "Address: " + 
-                      nodeFd.getInetAddress());
-	this.coo = coo;
-	msgPrc = new MessageProtocol(coo);
-  }
-  
-  public void run() {
-    in = null;
-    out = null;
+    coo = Coordinator.getInstance();
+
     try {
       /* obtain an input stream to the node ... */
       in = new BufferedReader(new InputStreamReader(
                                 nodeFd.getInputStream() ));
-	  /* ... and an output stream to the same node */
+      /* ... and an output stream to the same node */
       out = new PrintWriter(nodeFd.getOutputStream(), true);
     }
     catch (IOException e) {
-	  System.err.println(e);
-	  return;
+      System.err.println("Could not get input/output streams");
+      System.err.println(e);
+    }
+    
+    if ( state != null ) {
+      msgPrc = new StateWrapper(state);
+    } else {
+      msgPrc = new StateWrapper();
     }
 
-    String msg;
-    Document response = null;
+  }
+  
+  public void run() {
+
+    String response;
+    String msg=null;
     try {
-      while ((msg = in.readLine()) != null) {
-        
-        System.out.println(msg);
-        Document msgDocument = DocumentHelper.parseText(msg);
-		response = msgPrc.process(msgDocument);
-		out.println(this.linate(response.asXML()));
+      while (( msg = in.readLine()) != null) {
+        if ( (response = msgPrc.process(msg)) != null ) {
+		  out.println(response);
+        }
+        msg = null;
       }
     }
     catch (IOException e) {
-      System.out.println("Error reading from client");
+      System.err.println("Error reading from client");
       System.err.println(e);
-    } catch (DocumentException e) {
-      System.out.println("Wrong XML format response");
-      System.out.println("Reseting state and ingoring");
-      //reset state
-      e.printStackTrace();
     }
-  }
-  
-  private String linate(final String s) {
-    return s.replace("\n", "").replace("\r",  "").replace("\r\n",  "");
+
   }
   
   

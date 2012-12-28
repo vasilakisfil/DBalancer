@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class DebugConsole implements Runnable {
-  private Coordinator coo;
+  //private Coordinator coo;
   private BufferedReader stdIn = null;
   
   DebugConsole(final Coordinator coo) {
-    this.coo = coo;
+    //this.coo = coo;
     /* obtain an input stream to the console ... */
     stdIn = new BufferedReader( new InputStreamReader(System.in) );
   }
