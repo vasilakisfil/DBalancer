@@ -7,6 +7,7 @@ import dBalancer.msgProtocol.message.InfoMessage;
 import dBalancer.msgProtocol.message.Message;
 
 public class Initialize implements State {
+  @SuppressWarnings("unused")
   private final Helpers helper;
   
   public Initialize() {
@@ -16,9 +17,14 @@ public class Initialize implements State {
   public String process(final StateWrapper wrapper,
                         final Document msgDocument,
                         final Message msgType) {
+    String response = null;
 
-    //msgType.handle();
+    if (msgType.getClass() == InfoMessage.class)
+    {
+      response = msgType.handleMsg();
+    }
+    
     wrapper.setState(new Idle());
-    return null;
+    return response;
   }
 }

@@ -43,7 +43,6 @@ public class Node implements Runnable {
     } else {
       msgPrc = new StateWrapper();
     }
-
   }
   
   public void run() {
@@ -52,6 +51,7 @@ public class Node implements Runnable {
     String msg=null;
     try {
       while (( msg = in.readLine()) != null) {
+        System.out.println(msg); //move that to logger
         if ( (response = msgPrc.process(msg)) != null ) {
 		  out.println(response);
         }

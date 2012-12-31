@@ -19,8 +19,8 @@ public class Idle implements State {
                         final Document msgDocument,
                         final Message msgType) {
 
-    InfoMessage infoMsg = new InfoMessage();
-    return helper.linate(infoMsg.build());
+    InfoMessage infoMsg = new InfoMessage(msgDocument);
+    return helper.linate(infoMsg.handleMsg());
   }
 
   

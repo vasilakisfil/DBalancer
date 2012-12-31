@@ -1,29 +1,29 @@
 package dBalancer;
 
+import java.net.InetAddress;
 import java.net.Socket;
+
+import dBalancer.overlay.OverlayManager;
 
 
 
 public class Coordinator {
   
   private static Coordinator coo;
-  //private Socket client;
+  private OverlayManager om;
 
-  Coordinator() {
+  Coordinator(InetAddress IP, int serverport) {
     Coordinator.coo = this;
+    om = new OverlayManager();
     
-  }
-  
-  Coordinator(final Socket client) {
-      //this.client = client;
+    
   }
 
   static public Coordinator getInstance() {
-    return coo;
+    return Coordinator.coo;
   }
   
   public void start() {
-
       try {
         while(true) {
           System.out.println("Sleeping");

@@ -1,14 +1,12 @@
 package dBalancer;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import dBalancer.msgProtocol.message.RequestInfoMessage;
+import dBalancer.msgProtocol.message.InfoMessage;
 import dBalancer.msgProtocol.state.Initialize;
 
 
@@ -16,13 +14,11 @@ import dBalancer.msgProtocol.state.Initialize;
 public class DBalancer {
   private Coordinator coo;
   
-  public DBalancer() {
-    coo = new Coordinator();
-  }
-  
-  public void start(int port, boolean debug) {
+  public void start(InetAddress IP, int serverPort, boolean debug) {
+    coo = new Coordinator(IP, serverPort);
+    
     //initiate server
-    Thread s = new Thread(new Server(port));
+    Thread s = new Thread(new Server(serverPort));
     s.start();
 	
     if (debug) {
@@ -34,10 +30,12 @@ public class DBalancer {
     coo.start();
   }
   
-  public void start(InetAddress IP, int conPort, int serverPort, boolean debug) throws DBlncrException {
+  public void start(InetAddress IP, int remotePort, int serverPort,
+                    boolean debug) throws DBlncrException {
+    coo = new Coordinator(IP, serverPort);
     
     //initialize (retrieve other servers)
-    this.initializeClient(IP, conPort);
+    this.initializeClient(IP, remotePort);
     
     //initiate server
     Thread s = new Thread(new Server(serverPort));
@@ -53,10 +51,10 @@ public class DBalancer {
     
   }
   
-  private void initializeClient(InetAddress IP, int conPort) throws DBlncrException {
+  private void initializeClient(InetAddress IP, int remotePort) throws DBlncrException {
     Socket serverSd = null;
     try {
-      serverSd = new Socket(IP, conPort);
+      serverSd = new Socket(IP, remotePort);
     } catch (IOException e) {
       System.err.println(e);
       System.exit(1);
@@ -71,30 +69,19 @@ public class DBalancer {
       throw new DBlncrException();
     }
     
-    RequestInfoMessage request = new RequestInfoMessage();
-    out.println(request.build());
-    
-    //start new node with specific init state
-    //that handles the incoming response
+    InfoMessage msg = new InfoMessage(null);
+    out.println(msg.request());
     
     /* start a new thread to handle the new node */
-    
-    
     Thread t = new Thread(new Node(serverSd, new Initialize() ));
     t.start();
-    
   }
   
   public void showLoad() {
     String load = coo.getLoad();
     System.out.println(load);
   }
-  
 
-  
-  
-  
-  
   private class Server implements Runnable {
     private final ServerSocket server;
     private final int port;
