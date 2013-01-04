@@ -1,35 +1,63 @@
 package dBalancer.overlay;
 
+import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.Socket;
+
+import dBalancer.Helpers;
 
 public class NodeInfo {
-  private InetAddress IP;
-  private Integer Port;
+  private final Helpers helper;
+  private final InetAddress IP;
+  private final Integer serverPort, comPort;
+  private final String nodeID;
+  private Socket nodeSd;
+  private PrintWriter out;
 
-  public NodeInfo(InetAddress IP, Integer Port) {
+  public NodeInfo(InetAddress IP, Integer serverPort, Integer comPort,
+      Socket nodeSd, PrintWriter out, String nodeID) {
+    helper = new Helpers();
     this.IP = IP;
-    this.Port = Port;    
-  }
-
-  public void setIP(InetAddress IP) {
-    this.IP = IP;
-  }
-
-  public void setPort(int Port) {
-    this.Port = Port;
-  }
-
-  public Integer getHashCode() {
-    String s = this.IP.toString().concat(":").concat(Port.toString());
-    return s.hashCode();
+    this.serverPort = serverPort;
+    this.comPort = comPort;
+    this.nodeSd = nodeSd;
+    this.out = out;
+    this.nodeID = nodeID;
   }
   
+  public NodeInfo(InetAddress IP, Integer comPort,
+      Socket nodeSd, PrintWriter out) {
+    this(IP, 0, comPort, nodeSd, out, "null");
+  }
+
+  
+  public void setOut(PrintWriter out) {
+    this.out = out;
+  }
+  public void setNodeSd(Socket sd) {
+    this.nodeSd = sd;
+  }
+
+  public String getID() {
+    return this.nodeID;
+  }
   public InetAddress getIP() {
     return this.IP;
   }
-  
-  public Integer getPort() {
-    return this.Port;
+  public String getStringIP() {
+    return this.IP.getHostAddress();
+  }
+  public Integer getComPort() {
+    return this.comPort;
+  }
+  public Integer getServerPort() {
+    return this.serverPort;
+  }
+  public Socket getSd() {
+    return this.nodeSd;
+  }
+  public PrintWriter getOut() {
+    return this.out;
   }
 
 }

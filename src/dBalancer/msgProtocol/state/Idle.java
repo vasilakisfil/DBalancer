@@ -3,11 +3,11 @@ package dBalancer.msgProtocol.state;
 import org.dom4j.Document;
 
 import dBalancer.Helpers;
+import dBalancer.msgProtocol.message.AddMeMessage;
 import dBalancer.msgProtocol.message.InfoMessage;
 import dBalancer.msgProtocol.message.Message;
 
 public class Idle implements State {
-  
   private final Helpers helper;
   
   public Idle() {
@@ -19,8 +19,9 @@ public class Idle implements State {
                         final Document msgDocument,
                         final Message msgType) {
 
-    InfoMessage infoMsg = new InfoMessage(msgDocument);
-    return helper.linate(infoMsg.handleMsg());
+    
+    System.out.println("I am in IDLE STATE");
+    return msgType.handleMsg();
   }
 
   

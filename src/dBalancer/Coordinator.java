@@ -1,10 +1,9 @@
 package dBalancer;
 
 import java.net.InetAddress;
-import java.net.Socket;
 
+import dBalancer.overlay.NodeInfo;
 import dBalancer.overlay.OverlayManager;
-
 
 
 public class Coordinator {
@@ -12,10 +11,9 @@ public class Coordinator {
   private static Coordinator coo;
   private OverlayManager om;
 
-  Coordinator(InetAddress IP, int serverport) {
+  Coordinator(InetAddress IP, Integer serverport) {
     Coordinator.coo = this;
-    om = new OverlayManager();
-    
+    this.om = new OverlayManager(IP, serverport);
     
   }
 

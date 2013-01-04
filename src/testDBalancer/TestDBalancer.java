@@ -55,8 +55,7 @@ public class TestDBalancer {
       }
       
       dBlncr.start(InetAddress.getByName(ip), Integer.valueOf(serverport),
-                    debug);
-      
+                    debug);      
     }
     else {      
       try {

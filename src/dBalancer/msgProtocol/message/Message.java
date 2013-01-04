@@ -1,5 +1,7 @@
 package dBalancer.msgProtocol.message;
 
+import dBalancer.overlay.NodeInfo;
+
 public interface Message {
   //handles the response whatever the msg is
   public String handleMsg();
@@ -15,4 +17,6 @@ public interface Message {
   public boolean isRequest();
   //true if the message is a reply on a request
   public boolean isReply();
+  
+  public String getCurrentNodeID();
 }

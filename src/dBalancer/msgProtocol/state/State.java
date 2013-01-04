@@ -7,7 +7,7 @@ import dBalancer.msgProtocol.message.Message;
 public interface State {
   
   String process(final StateWrapper context,
-                  final Document msgPrc,
+                  final Document msgDocument,
                   final Message msgType);
 }
 

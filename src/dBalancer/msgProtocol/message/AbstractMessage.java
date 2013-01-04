@@ -1,16 +1,24 @@
 package dBalancer.msgProtocol.message;
 
 
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Date;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import dBalancer.Helpers;
+import dBalancer.overlay.NodeInfo;
+import dBalancer.overlay.OverlayManager;
 
 public abstract class AbstractMessage {
   @SuppressWarnings("unused")
   private final Helpers helper;
+  private final OverlayManager om;
+  private final NodeInfo currentNode;
+  
   private final Document msgDocument;
   private Element header, body;
   private String recipient, sender;
@@ -22,8 +30,15 @@ public abstract class AbstractMessage {
     REQUEST, REPLYREQUEST;
   }
   
-  AbstractMessage(Document msgDocument) {
+  public enum MsgName {
+    INFOMESSAGE, ADDMEMESSAGE;
+  }
+  
+  AbstractMessage(Document msgDocument, String nodeID) {
     helper = new Helpers();
+    this.om = OverlayManager.getInstance();
+    this.currentNode = this.om.getNode(nodeID);
+    
     if (msgDocument != null)
     {
       this.msgDocument = msgDocument;
@@ -37,20 +52,73 @@ public abstract class AbstractMessage {
     }
   }
   
+  AbstractMessage(Document msgDocument, NodeInfo currentNode) {
+    helper = new Helpers();
+    this.om = OverlayManager.getInstance();
+    this.currentNode = currentNode;
+    
+    if (msgDocument != null)
+    {
+      this.msgDocument = msgDocument;
+      this.isNull = false;
+      this.decomposeMsgDocument();
+      setRequestReplyType();
+    } else {
+      this.msgDocument = null;
+      this.isNull = true;
+      this.isRequest = false;
+    }
+  }
+  
+  protected InetAddress getCurrentNodeIP() {
+    return this.currentNode.getIP();
+  }
+  protected String getCurrentNodeStringIP() {
+    return this.currentNode.getStringIP();
+  }
+  protected Integer getCurrentNodePort() {
+    return this.currentNode.getServerPort();
+  }
+  protected Socket getCurrentNodeSd() {
+    return this.currentNode.getSd();
+  }
+  protected PrintWriter getCurrentNodeOut() {
+    return this.currentNode.getOut();
+  }
+  protected NodeInfo getCurrentPartlyNode() {
+    return this.currentNode;
+  }
+  protected String getCurrentNodeID() {
+    return this.sender.toString();
+  }
+  
   public boolean isNull() {
     return this.isNull.booleanValue();
   }
-  
   public boolean isRequest() {
     return this.isRequest.booleanValue();
   }
-  
   public boolean isReply() {
     return !this.isRequest.booleanValue();
   }
   
   protected Document getMsgDocument() {
     return this.msgDocument;
+  }
+  protected Element getMsgHeader() { 
+    return this.header;
+  }
+  protected Element getMsgBody() {
+    return this.body;
+  }
+  protected String getMsgRecipient() {
+    return this.recipient.toString();    
+  }
+  protected String getMsgSender() {
+    return this.sender.toString();    
+  }
+  protected Long getMsgTime() {
+    return this.msgDate;
   }
   
   private void decomposeMsgDocument() {
@@ -76,18 +144,14 @@ public abstract class AbstractMessage {
     this.msgDate = Long.valueOf(this.header.attributeValue("timestamp"));    
   }
   
-  protected Element getMsgHeader() { 
-    return this.header;
-  }
-  
-  protected Element buildMsgHeader(Element root, MsgType type) {
+  protected Element buildMsgHeader(Element root, MsgType type, MsgName name) {
     Date date = new Date();
     root.addElement("header")
         .addAttribute("timestamp", String.valueOf(date.getTime()))
-        .addAttribute("sender-id", "Client0")
-        .addAttribute("recipient-id", "Client1")
+        .addAttribute("sender-id", this.om.getMyID())
+        .addAttribute("recipient-id", "???")
         .addAttribute("type", type.toString())
-        .addText( "INFOMESSAGE" );
+        .addText( name.toString() );
     return root;
   }
   
@@ -102,21 +166,5 @@ public abstract class AbstractMessage {
       System.err.println("Could not identify message type");
     //throw exception here if smth goes wrong
     } 
-  }
-  
-  protected Element getMsgBody() {
-    return this.body;
-  }
-  
-  protected String getMsgRecipient() {
-    return this.recipient;    
-  }
-  
-  protected String getMsgSender() {
-    return this.sender;    
-  }
-  
-  protected Long getMsgTime() {
-    return this.msgDate;
   }
 }
