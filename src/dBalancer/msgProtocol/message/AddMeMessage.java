@@ -1,118 +1,85 @@
 package dBalancer.msgProtocol.message;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Iterator;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import dBalancer.DBlncrException;
 import dBalancer.Helpers;
-import dBalancer.msgProtocol.message.AbstractMessage.MsgType;
 import dBalancer.overlay.NodeInfo;
 import dBalancer.overlay.OverlayManager;
 
-public class AddMeMessage extends AbstractMessage implements Message {
+//the only message that does not implement the Message interface
+public class AddMeMessage extends AbstractMessage {
   private final Helpers helper;
   private final OverlayManager om;
+  private String nodeID;
+  private static final Logger logger = Logger.getLogger(AddMeMessage
+                                                        .class
+                                                        .getName());
   
-  public AddMeMessage(Document msgDocument, String nodeID) {
-    super(msgDocument, nodeID);
+  public AddMeMessage(Document msgDocument) {
+    super(msgDocument);
     this.helper = new Helpers();
     this.om = OverlayManager.getInstance();
-  }
-  
-  public AddMeMessage(Document msgDocument, NodeInfo currentNode) {
-    super(msgDocument, currentNode);
-    this.helper = new Helpers();
-    this.om = OverlayManager.getInstance();
-  }
-  /*
-  public AddMeMessage(Document msgDocument, NodeInfo currentNode, Socket sd)
-      throws DBlncrException {
-    super(msgDocument, currentNode);
-    this.helper = new Helpers();
-    this.om = OverlayManager.getInstance();
-    
-    PrintWriter out = null;
-    try {
-      out = new PrintWriter(sd.getOutputStream(), true);
-    } catch (IOException e1) {
-      System.err.println("Could not create in out buffers");
-      e1.printStackTrace();
-      throw new DBlncrException();
-    }
-  }
-*/
-  public String handleMsg() {
-    String tmpReturn = null;
-    if (super.isNull()) {
-      tmpReturn = this.request();
-    }
-    else if (super.isRequest()) {
-      tmpReturn = this.replyRequest();
-    }
-    else if (super.isReply()) {
-      this.handleReplyRequest();
-      tmpReturn = null;
-    }
-    else {
-      System.err.println("Fatal Error");
-    }
-    return tmpReturn;
-  }
-  
-  @Override
+  }  
+
   public String request() {
     return helper.linate(this.createAddMeInfo(MsgType.REQUEST).asXML());
-  }   
-  
-  @Override
-  public String replyRequest() {
-    NodeInfo nf = this.createNodeInfo();
-    this.om.addNode(nf);
-    System.out.println("AddMeReply" + this.om.showAllNodes());
-    return helper.linate(this.createAddMeInfo(MsgType.REPLYREQUEST).asXML());
   }
   
-  @Override
-  public void handleReplyRequest() {
-    NodeInfo nf = this.createNodeInfo();
-    this.om.addNode(nf);
-    System.out.println("AddMeHandle" + this.om.showAllNodes());
-  }
-  
-  public String getCurrentNodeID() {
-    return super.getCurrentNodeID();
-  }
-  
-  
-  private NodeInfo createNodeInfo() {
-    InetAddress IP = null;
-    Integer serverPort = null;
-    String nodeID = null;
+  public void processAdd(InetAddress IP, Integer serverPort, Socket nodeSd,
+      PrintWriter out) {
+    String nodeID;
     
     Element node = super.getMsgBody().element("node");
     try {
       IP = InetAddress.getByName(node.attributeValue("IP"));
     } catch (UnknownHostException e) {
-      System.err.println("Fatal error: could not recognise IP");
-      e.printStackTrace();
+      logger.error("Could not recognise IP");
+      logger.error(e);
     }
     serverPort = Integer.valueOf(node.attributeValue("serverport"));
     nodeID = node.attributeValue("nodeID");
     
-    NodeInfo nf = new NodeInfo(IP, serverPort,
-                                super.getCurrentNodePort(),
-                                super.getCurrentNodeSd(), 
-                                super.getCurrentNodeOut(),
-                                nodeID);
-    return nf;
+    NodeInfo nf = new NodeInfo(IP, serverPort, serverPort, nodeSd,out, nodeID);
+    
+    this.om.addNode(nf);
+    
+    //check if superclass is usefull for this
+    this.nodeID = nodeID;
+  }
+  
+  public String processAddResponse(InetAddress IP, Integer serverPort,
+      Socket nodeSd, PrintWriter out) {
+    String nodeID;
+    
+    Element node = super.getMsgBody().element("node");
+    try {
+      IP = InetAddress.getByName(node.attributeValue("IP"));
+    } catch (UnknownHostException e) {
+      logger.error("Ccould not recognise IP");
+      logger.error(e);
+    }
+    serverPort = Integer.valueOf(node.attributeValue("serverport"));
+    nodeID = node.attributeValue("nodeID");
+    
+    NodeInfo nf = new NodeInfo(IP, serverPort, serverPort, nodeSd, out, nodeID);
+    
+    this.om.addNode(nf);
+    //check if superclass is usefull for this
+    this.nodeID = nodeID;
+    
+    return helper.linate(this.createAddMeInfo(MsgType.REQUEST).asXML());
+  }
+  
+  public String getSenderNodeID() {
+    return this.nodeID;
   }
   
   private Document createAddMeInfo(MsgType type) {

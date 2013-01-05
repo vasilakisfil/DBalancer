@@ -1,27 +1,25 @@
 package dBalancer.msgProtocol.state;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 
-import dBalancer.Helpers;
-import dBalancer.msgProtocol.message.AddMeMessage;
-import dBalancer.msgProtocol.message.InfoMessage;
 import dBalancer.msgProtocol.message.Message;
 
 public class Idle implements State {
-  private final Helpers helper;
+  private String response;
+  private static final Logger logger = Logger.getLogger(Idle
+                                                        .class
+                                                        .getName());
   
   public Idle() {
-    helper = new Helpers();
+    logger.info("Idle state");
   }
   
-
   public String process(final StateWrapper wrapper,
                         final Document msgDocument,
                         final Message msgType) {
-
-    
-    System.out.println("I am in IDLE STATE");
-    return msgType.handleMsg();
+    response = msgType.handleMsg();
+    return response;
   }
 
   

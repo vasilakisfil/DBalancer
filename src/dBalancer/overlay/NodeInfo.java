@@ -4,19 +4,18 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import dBalancer.Helpers;
-
 public class NodeInfo {
-  private final Helpers helper;
   private final InetAddress IP;
   private final Integer serverPort, comPort;
-  private final String nodeID;
+  @SuppressWarnings("unused")
+  private final Long created;
+  private String nodeID;
   private Socket nodeSd;
   private PrintWriter out;
 
   public NodeInfo(InetAddress IP, Integer serverPort, Integer comPort,
       Socket nodeSd, PrintWriter out, String nodeID) {
-    helper = new Helpers();
+    this.created = System.currentTimeMillis();
     this.IP = IP;
     this.serverPort = serverPort;
     this.comPort = comPort;
@@ -25,8 +24,8 @@ public class NodeInfo {
     this.nodeID = nodeID;
   }
   
-  public NodeInfo(InetAddress IP, Integer comPort,
-      Socket nodeSd, PrintWriter out) {
+  public NodeInfo(InetAddress IP, Integer comPort, Socket nodeSd,
+      PrintWriter out) {
     this(IP, 0, comPort, nodeSd, out, "null");
   }
 
@@ -36,6 +35,9 @@ public class NodeInfo {
   }
   public void setNodeSd(Socket sd) {
     this.nodeSd = sd;
+  }
+  public void setID(String nodeID) {
+    this.nodeID = nodeID;
   }
 
   public String getID() {

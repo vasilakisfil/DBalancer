@@ -1,33 +1,41 @@
 package dBalancer.overlay;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-import dBalancer.Coordinator;
 import dBalancer.Helpers;
 
 public class OverlayManager {
-  private static OverlayManager om;
-  private final InetAddress myIP;
-  private final Integer myPort;
-  private final String myID;
-  private final Helpers helper;
-  @SuppressWarnings("unused")
-  private Coordinator coo;
-  private ConcurrentHashMap<String, NodeInfo> hm;
+  private static OverlayManager instance;
+  private InetAddress myIP;
+  private Integer myPort;
+  private String myID;
+  private Helpers helper;
+  private final ConcurrentHashMap<String, NodeInfo> hm;
   
-  public OverlayManager(InetAddress IP, Integer Port) {
+  private OverlayManager() {
     helper = new Helpers();
-    this.myIP = IP;
-    this.myPort = Port;
-    this.myID = helper.newNodeId();
-    OverlayManager.om = this;
-    this.coo = Coordinator.getInstance();
     this.hm = new ConcurrentHashMap<String, NodeInfo>();
   }
 
   public static OverlayManager getInstance() {
-    return OverlayManager.om;
+    if (instance == null) {
+      instance = new OverlayManager();
+    }
+    return instance;
+  }
+  
+  public void setMyInfo(InetAddress IP, Integer Port) {
+    this.myIP = IP;
+    this.myPort = Port;
+    this.myID = helper.newNodeId();
+  }
+  public String getMyInfo() {
+    String s = " myIP: " + this.myIP.getHostAddress() + " " 
+                        + "myPort: " + this.myPort + " "
+                        + "myID: " + this.myID;
+    return s;
   }
 
   public void addNode(NodeInfo node) {
@@ -66,9 +74,8 @@ public class OverlayManager {
     return hm.size();
   }
   
-  public NodeInfo[] getAllNodes() {
-    //NodeInfo[] ArrayNodeInfo = new NodeInfo[this.getSize()];
-    return this.hm.values().toArray(new NodeInfo[this.getSize()]);
+  public ArrayList<NodeInfo> getAllNodes() {
+    return new ArrayList<NodeInfo>(this.hm.values());
   }
   
   public InetAddress getMyIP() {
@@ -88,8 +95,7 @@ public class OverlayManager {
   }
   
   public String showAllNodes() {
-    NodeInfo[] nodeInfo = new NodeInfo[this.getSize()]; 
-    nodeInfo = this.getAllNodes();
+    ArrayList<NodeInfo> nodeInfo = this.getAllNodes(); 
     String show = "";
     
     Integer counter = 0; //for-each loops do not have built in counter
@@ -104,6 +110,14 @@ public class OverlayManager {
     }
     
     return show;
+  }
+  
+  public void dispatchMsg(String msg, String nodeID) {
+    if (nodeID == null) {
+      //dispatch it to all
+    } else {
+      this.getNode(nodeID).getOut().println(msg);
+    }
   }
 
 }

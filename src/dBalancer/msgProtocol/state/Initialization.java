@@ -1,29 +1,39 @@
 package dBalancer.msgProtocol.state;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 
 import dBalancer.Helpers;
-import dBalancer.Node;
-import dBalancer.msgProtocol.message.AddMeMessage;
 import dBalancer.msgProtocol.message.InfoMessage;
 import dBalancer.msgProtocol.message.Message;
-import dBalancer.overlay.NodeInfo;
 import dBalancer.overlay.OverlayManager;
 
 public class Initialization implements State {
   @SuppressWarnings("unused")
   private final Helpers helper;
-  private final OverlayManager om;
+  private static Initialization instance;
+  @SuppressWarnings("unused")
+  private static OverlayManager om;
   private StateEnum internalState;
-  
+  private static final Logger logger = Logger.getLogger(Initialization
+                                                        .class
+                                                        .getName());  
   private enum StateEnum {
-    ADDME, GETNODES
+    RECEIVENODES
   }
   
-  public Initialization() {
+  private Initialization() {
     helper = new Helpers();
-    this.om = OverlayManager.getInstance();
-    this.internalState = StateEnum.ADDME;
+    this.internalState = StateEnum.RECEIVENODES;
+    logger.info("Initialization State");
+  }
+  
+  public static Initialization getInstance() {
+    if (instance == null) {
+      instance = new Initialization();
+      om = OverlayManager.getInstance();
+    }
+    return instance;
   }
 
   public String process(final StateWrapper wrapper,
@@ -31,64 +41,17 @@ public class Initialization implements State {
                         final Message msgType) {
     String response = null;
     
-    if (msgType.getClass().equals(AddMeMessage.class)) {
-      if (this.internalState.equals(StateEnum.ADDME)) {
-        System.out.println("Handling response to AddMe message");
-        msgType.handleMsg();
-        
-        new InfoMessage(null, msgType.getCurrentNodeID());
-        
-        //this.om.getNode(msgType.getCurrentNodeID())
-          //      .getOut().println(im.handleMsg());
-        this.internalState = StateEnum.GETNODES;
-      }
-    //for other general purpose messages just reply the request
-    } else if (msgType.getClass().equals(InfoMessage.class)) {
-      if (this.internalState.equals(StateEnum.GETNODES)) {
-        System.out.println("Handling info message");
-        msgType.handleMsg();
-        
-        InfoMessage info = (InfoMessage) msgType;
-        NodeInfo[] nf = info.returnNodes();
-        if (nf[0] != null) {
-          for(NodeInfo nodeInfo : nf) {
-            if (!this.om.containsNode(nodeInfo.getID())) {
-              this.om.addNode(nodeInfo);
-            }
-            System.out.println(nodeInfo.getServerPort());
-          }
-        }
-        
-        nf = this.om.getAllNodes();
-        for(NodeInfo nodeInfo : nf) {
-          if ( nodeInfo.getID().equals(wrapper.getCurrentNode().getID())) {
-            System.out.println(nodeInfo.getServerPort());
-            /* start a new thread to handle the new node */
-            Thread t = new Thread(new Node(nodeInfo.getIP(),
-                                            nodeInfo.getServerPort(),
-                                            nodeInfo.getID()));
-            t.start();
-          }
-        }
-        
+    if(internalState.equals(StateEnum.RECEIVENODES)) {
+      if (msgType.getClass().equals(InfoMessage.class)) {
+        InfoMessage msg = (InfoMessage) msgType;
+        //retrieve other nodes
+        msg.handleMsg();
+        msg.connectToNodes();
+        //go to IDLE state
         wrapper.setState(new Idle());
       }
     }
-    
-    else {
-      response = msgType.handleMsg();
-    }
-    
-    //NodeInfo[] nodeInfo = new NodeInfo[this.om.getSize()];
-    
-    //for (NodeInfo nf : nodeInfo) {
-      /* start a new thread to handle the new node */
-     /* Thread t = new Thread(new Node(nf.getIP(), nf.getPort() ));
-      t.start();
-    }*/
-    
-    
-    //wrapper.setState(new Idle());
+
     return response;
   }
 }

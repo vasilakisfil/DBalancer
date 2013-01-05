@@ -1,35 +1,37 @@
 package dBalancer;
 
-import java.net.InetAddress;
+import org.apache.log4j.Logger;
 
-import dBalancer.overlay.NodeInfo;
 import dBalancer.overlay.OverlayManager;
 
 
 public class Coordinator {
-  
-  private static Coordinator coo;
-  private OverlayManager om;
-
-  Coordinator(InetAddress IP, Integer serverport) {
-    Coordinator.coo = this;
-    this.om = new OverlayManager(IP, serverport);
-    
+  private static Coordinator instance;
+  @SuppressWarnings("unused")
+  private static OverlayManager om;
+  private static final Logger logger = Logger.getLogger(Coordinator
+                                                        .class
+                                                        .getName());
+  Coordinator() {
   }
 
   static public Coordinator getInstance() {
-    return Coordinator.coo;
+    if (instance == null) {
+      instance = new Coordinator();
+      om = OverlayManager.getInstance();
+    }
+    return instance;
   }
   
   public void start() {
       try {
         while(true) {
-          System.out.println("Sleeping");
+          logger.info("Sleeping");
           Thread.sleep(4000);
         }
       } catch (InterruptedException e) {
-        System.out.println("Main thread Interrupted");
-        e.printStackTrace();
+        logger.fatal("Main thread Interrupted");
+        logger.fatal(e);
       } finally {
         System.exit(1);
       }

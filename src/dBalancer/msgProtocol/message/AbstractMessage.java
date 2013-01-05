@@ -1,30 +1,26 @@
 package dBalancer.msgProtocol.message;
 
-
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Date;
-
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import dBalancer.Helpers;
-import dBalancer.overlay.NodeInfo;
 import dBalancer.overlay.OverlayManager;
 
 public abstract class AbstractMessage {
   @SuppressWarnings("unused")
   private final Helpers helper;
   private final OverlayManager om;
-  private final NodeInfo currentNode;
   
   private final Document msgDocument;
   private Element header, body;
-  private String recipient, sender;
+  private String recipientID, senderID;
   private Boolean isRequest;
   private Boolean isNull;
   private long msgDate;
+  private static final Logger logger = Logger.getLogger(AbstractMessage
+                                                        .class
+                                                        .getName());
   
   public enum MsgType {
     REQUEST, REPLYREQUEST;
@@ -34,10 +30,9 @@ public abstract class AbstractMessage {
     INFOMESSAGE, ADDMEMESSAGE;
   }
   
-  AbstractMessage(Document msgDocument, String nodeID) {
+  AbstractMessage(Document msgDocument) {
     helper = new Helpers();
     this.om = OverlayManager.getInstance();
-    this.currentNode = this.om.getNode(nodeID);
     
     if (msgDocument != null)
     {
@@ -50,46 +45,6 @@ public abstract class AbstractMessage {
       this.isNull = true;
       this.isRequest = false;
     }
-  }
-  
-  AbstractMessage(Document msgDocument, NodeInfo currentNode) {
-    helper = new Helpers();
-    this.om = OverlayManager.getInstance();
-    this.currentNode = currentNode;
-    
-    if (msgDocument != null)
-    {
-      this.msgDocument = msgDocument;
-      this.isNull = false;
-      this.decomposeMsgDocument();
-      setRequestReplyType();
-    } else {
-      this.msgDocument = null;
-      this.isNull = true;
-      this.isRequest = false;
-    }
-  }
-  
-  protected InetAddress getCurrentNodeIP() {
-    return this.currentNode.getIP();
-  }
-  protected String getCurrentNodeStringIP() {
-    return this.currentNode.getStringIP();
-  }
-  protected Integer getCurrentNodePort() {
-    return this.currentNode.getServerPort();
-  }
-  protected Socket getCurrentNodeSd() {
-    return this.currentNode.getSd();
-  }
-  protected PrintWriter getCurrentNodeOut() {
-    return this.currentNode.getOut();
-  }
-  protected NodeInfo getCurrentPartlyNode() {
-    return this.currentNode;
-  }
-  protected String getCurrentNodeID() {
-    return this.sender.toString();
   }
   
   public boolean isNull() {
@@ -111,11 +66,11 @@ public abstract class AbstractMessage {
   protected Element getMsgBody() {
     return this.body;
   }
-  protected String getMsgRecipient() {
-    return this.recipient.toString();    
+  protected String getRecipientNodeID() {
+    return this.recipientID.toString();    
   }
-  protected String getMsgSender() {
-    return this.sender.toString();    
+  protected String getSenderNodeID() {
+    return this.senderID.toString();
   }
   protected Long getMsgTime() {
     return this.msgDate;
@@ -139,15 +94,14 @@ public abstract class AbstractMessage {
     this.body = root.element("body");
     
     //set message properties
-    this.recipient = this.header.attributeValue("recipient-id");
-    this.sender = this.header.attributeValue("sender-id");
+    this.recipientID = this.header.attributeValue("recipient-id");
+    this.senderID = this.header.attributeValue("sender-id");
     this.msgDate = Long.valueOf(this.header.attributeValue("timestamp"));    
   }
   
   protected Element buildMsgHeader(Element root, MsgType type, MsgName name) {
-    Date date = new Date();
     root.addElement("header")
-        .addAttribute("timestamp", String.valueOf(date.getTime()))
+        .addAttribute("timestamp", String.valueOf(System.currentTimeMillis()))
         .addAttribute("sender-id", this.om.getMyID())
         .addAttribute("recipient-id", "???")
         .addAttribute("type", type.toString())
@@ -163,8 +117,9 @@ public abstract class AbstractMessage {
                           .equals(MsgType.REPLYREQUEST.toString())) {
       this.isRequest = false;
     } else {
-      System.err.println("Could not identify message type");
+      logger.error("Could not identify message type");
     //throw exception here if smth goes wrong
     } 
   }
+  
 }

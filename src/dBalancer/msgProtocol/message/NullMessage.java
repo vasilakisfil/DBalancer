@@ -3,14 +3,13 @@ package dBalancer.msgProtocol.message;
 import org.dom4j.Document;
 
 import dBalancer.Helpers;
-import dBalancer.overlay.NodeInfo;
 
 public class NullMessage extends AbstractMessage implements Message {
   @SuppressWarnings("unused")
   private final Helpers helper;
   
-  public NullMessage(Document msgDocument, NodeInfo currentNode) {
-    super(msgDocument, currentNode);
+  public NullMessage(Document msgDocument) {
+    super(msgDocument);
     helper = new Helpers();
   }
 
@@ -34,7 +33,7 @@ public class NullMessage extends AbstractMessage implements Message {
     return null;
   }
   
-  public String getCurrentNodeID() {
+  public String getSenderNodeID() {
     return "ID";
   }
 
