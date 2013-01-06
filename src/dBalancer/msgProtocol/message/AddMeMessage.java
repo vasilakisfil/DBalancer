@@ -23,7 +23,7 @@ public class AddMeMessage extends AbstractMessage {
                                                         .class
                                                         .getName());
   
-  public AddMeMessage(Document msgDocument) {
+  public AddMeMessage(final Document msgDocument) {
     super(msgDocument);
     this.helper = new Helpers();
     this.om = OverlayManager.getInstance();
@@ -33,9 +33,40 @@ public class AddMeMessage extends AbstractMessage {
     return helper.linate(this.createAddMeInfo(MsgType.REQUEST).asXML());
   }
   
-  public void processAdd(InetAddress IP, Integer serverPort, Socket nodeSd,
-      PrintWriter out) {
+  public String processAddResponse(final Socket nodeSd, PrintWriter out) {
     String nodeID;
+    InetAddress IP = null;
+    Integer serverPort = null;
+    
+    Element node = super.getMsgBody().element("node");
+    try {
+      IP = InetAddress.getByName(node.attributeValue("IP"));
+    } catch (UnknownHostException e) {
+      logger.error("Ccould not recognise IP");
+      logger.error(e);
+    }
+    serverPort = Integer.valueOf(node.attributeValue("serverport"));
+    nodeID = node.attributeValue("nodeID");
+    
+    NodeInfo nf = new NodeInfo(IP, serverPort, serverPort, nodeSd, out, nodeID);
+    
+    this.om.addNode(nf);
+    logger.info("Added new node in Overlay Manager, " +  IP.getHostAddress() +
+                " " + serverPort + " " + nodeID); 
+    //check if superclass is usefull for this
+    this.nodeID = nodeID;
+    
+    return helper.linate(this.createAddMeInfo(MsgType.REQUEST).asXML());
+  }
+  
+  public String getSenderNodeID() {
+    return this.nodeID;
+  }
+  
+  public void processAdd(final Socket nodeSd, final PrintWriter out) {
+    String nodeID;
+    InetAddress IP = null;
+    Integer serverPort = null;
     
     Element node = super.getMsgBody().element("node");
     try {
@@ -55,34 +86,7 @@ public class AddMeMessage extends AbstractMessage {
     this.nodeID = nodeID;
   }
   
-  public String processAddResponse(InetAddress IP, Integer serverPort,
-      Socket nodeSd, PrintWriter out) {
-    String nodeID;
-    
-    Element node = super.getMsgBody().element("node");
-    try {
-      IP = InetAddress.getByName(node.attributeValue("IP"));
-    } catch (UnknownHostException e) {
-      logger.error("Ccould not recognise IP");
-      logger.error(e);
-    }
-    serverPort = Integer.valueOf(node.attributeValue("serverport"));
-    nodeID = node.attributeValue("nodeID");
-    
-    NodeInfo nf = new NodeInfo(IP, serverPort, serverPort, nodeSd, out, nodeID);
-    
-    this.om.addNode(nf);
-    //check if superclass is usefull for this
-    this.nodeID = nodeID;
-    
-    return helper.linate(this.createAddMeInfo(MsgType.REQUEST).asXML());
-  }
-  
-  public String getSenderNodeID() {
-    return this.nodeID;
-  }
-  
-  private Document createAddMeInfo(MsgType type) {
+  private Document createAddMeInfo(final MsgType type) {
     Document request = DocumentHelper.createDocument();
     Element root = request.addElement( "DBalancerMsg" );
     

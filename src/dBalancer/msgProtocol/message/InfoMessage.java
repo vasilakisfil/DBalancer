@@ -26,7 +26,7 @@ public class InfoMessage extends AbstractMessage implements Message {
                                                         .class
                                                         .getName());
   
-  public InfoMessage(Document msgDocument) {
+  public InfoMessage(final Document msgDocument) {
     super(msgDocument);
     this.helper = new Helpers();
     this.om = OverlayManager.getInstance();

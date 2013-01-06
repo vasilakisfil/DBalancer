@@ -59,7 +59,7 @@ public class Node implements Runnable {
     
     try {
       while (( msg = in.readLine()) != null) {
-        logger.info("Received new message\n" + msg);
+        logger.info("Received new message from " + nodeID + "\n" + msg);
         if ( (response = stateWrapper.process(msg)) != null ) {
 		  out.println(response);
         }

@@ -30,7 +30,7 @@ public abstract class AbstractMessage {
     INFOMESSAGE, ADDMEMESSAGE;
   }
   
-  AbstractMessage(Document msgDocument) {
+  AbstractMessage(final Document msgDocument) {
     helper = new Helpers();
     this.om = OverlayManager.getInstance();
     
@@ -99,7 +99,8 @@ public abstract class AbstractMessage {
     this.msgDate = Long.valueOf(this.header.attributeValue("timestamp"));    
   }
   
-  protected Element buildMsgHeader(Element root, MsgType type, MsgName name) {
+  protected Element buildMsgHeader(final Element root, final MsgType type,
+      final MsgName name) {
     root.addElement("header")
         .addAttribute("timestamp", String.valueOf(System.currentTimeMillis()))
         .addAttribute("sender-id", this.om.getMyID())

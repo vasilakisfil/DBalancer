@@ -13,8 +13,9 @@ public class NodeInfo {
   private Socket nodeSd;
   private PrintWriter out;
 
-  public NodeInfo(InetAddress IP, Integer serverPort, Integer comPort,
-      Socket nodeSd, PrintWriter out, String nodeID) {
+  public NodeInfo(final InetAddress IP, final Integer serverPort,
+      final Integer comPort, final Socket nodeSd, final PrintWriter out,
+      final String nodeID) {
     this.created = System.currentTimeMillis();
     this.IP = IP;
     this.serverPort = serverPort;
@@ -24,19 +25,19 @@ public class NodeInfo {
     this.nodeID = nodeID;
   }
   
-  public NodeInfo(InetAddress IP, Integer comPort, Socket nodeSd,
-      PrintWriter out) {
+  public NodeInfo(final InetAddress IP, final Integer comPort,
+      final Socket nodeSd, final PrintWriter out) {
     this(IP, 0, comPort, nodeSd, out, "null");
   }
 
   
-  public void setOut(PrintWriter out) {
+  public void setOut(final PrintWriter out) {
     this.out = out;
   }
-  public void setNodeSd(Socket sd) {
+  public void setNodeSd(final Socket sd) {
     this.nodeSd = sd;
   }
-  public void setID(String nodeID) {
+  public void setID(final String nodeID) {
     this.nodeID = nodeID;
   }
 

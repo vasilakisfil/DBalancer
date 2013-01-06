@@ -8,7 +8,7 @@ public class NullMessage extends AbstractMessage implements Message {
   @SuppressWarnings("unused")
   private final Helpers helper;
   
-  public NullMessage(Document msgDocument) {
+  public NullMessage(final Document msgDocument) {
     super(msgDocument);
     helper = new Helpers();
   }

@@ -26,7 +26,7 @@ public class OverlayManager {
     return instance;
   }
   
-  public void setMyInfo(InetAddress IP, Integer Port) {
+  public void setMyInfo(final InetAddress IP, final Integer Port) {
     this.myIP = IP;
     this.myPort = Port;
     this.myID = helper.newNodeId();
@@ -38,33 +38,33 @@ public class OverlayManager {
     return s;
   }
 
-  public void addNode(NodeInfo node) {
+  public void addNode(final NodeInfo node) {
     hm.put(node.getID(), node);
   }
   
-  public NodeInfo getNode(NodeInfo node) {
+  public NodeInfo getNode(final NodeInfo node) {
     return hm.get(node.getID());
   }
   
-  public NodeInfo getNode(String ID) {
+  public NodeInfo getNode(final String ID) {
     return hm.get(ID);
   }
   
-  public void removeNode(NodeInfo node) {
+  public void removeNode(final NodeInfo node) {
     hm.remove(node.getID());
   }
   
-  public void removeNode(String ID) {
+  public void removeNode(final String ID) {
     hm.remove(ID);
   }
   
-  public Boolean containsNode(String ID) {
+  public Boolean containsNode(final String ID) {
     if (this.hm.containsKey(ID)) {
       return true;
     } else return false;
   }
   
-  public Boolean containsNode(NodeInfo nf) {
+  public Boolean containsNode(final NodeInfo nf) {
     if (this.hm.containsKey(nf.getID())) {
       return true;
     } else return false;
@@ -112,7 +112,7 @@ public class OverlayManager {
     return show;
   }
   
-  public void dispatchMsg(String msg, String nodeID) {
+  public void dispatchMsg(final String msg, final String nodeID) {
     if (nodeID == null) {
       //dispatch it to all
     } else {

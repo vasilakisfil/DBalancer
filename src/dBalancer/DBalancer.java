@@ -36,16 +36,20 @@ public class DBalancer {
     PropertyConfigurator.configure("../log4j.properties");
   }
   
-  public void start(InetAddress IP, Integer serverPort, Boolean debug) {
+  public void start(final InetAddress IP, final Integer serverPort,
+      final Boolean debug) {
     this.om.setMyInfo(IP, serverPort);
     logger.info("Set myInfo\n" + this.om.getMyInfo());
     this.initialize(IP, serverPort, debug);
+    //initialize state wrapper
+    StateWrapper st = StateWrapper.getInstance();
+    st.setState(new Idle());
     //initiate Coordinator
     coo.start();
   }
   
-  public void start(InetAddress IP, Integer remotePort, Integer serverPort,
-                    Boolean debug) throws DBlncrException {
+  public void start(final InetAddress IP, final Integer remotePort,
+      final Integer serverPort, final Boolean debug) throws DBlncrException {
     this.om.setMyInfo(IP, serverPort);
     //initialize (retrieve other servers)
     this.initializeClient(IP, remotePort);
@@ -55,7 +59,8 @@ public class DBalancer {
     
   }
   
-  public void initialize(InetAddress IP, Integer serverPort, Boolean debug) {
+  public void initialize(final InetAddress IP, final Integer serverPort,
+      final Boolean debug) {
     //initiate server
     Thread s = new Thread(new Server(serverPort));
     s.start();
@@ -66,7 +71,7 @@ public class DBalancer {
     }
   }
   
-  private void initializeClient(InetAddress IP, Integer remotePort)
+  private void initializeClient(final InetAddress IP, final Integer remotePort)
       throws DBlncrException {
     Socket nodeSd = null;
     BufferedReader in = null;
@@ -108,7 +113,7 @@ public class DBalancer {
     AddMeMessage response = new AddMeMessage(msgDocument);
     
     //create and add node
-    response.processAdd(IP, remotePort, nodeSd, out);
+    response.processAdd(nodeSd, out);
  
     //initialize state wrapper
     StateWrapper st = StateWrapper.getInstance();
@@ -181,7 +186,8 @@ public class DBalancer {
       BufferedReader in;
       Document msgDocument;
       
-      HandleNewNode(InetAddress IP, Integer remotePort, Socket nodeSd) {
+      HandleNewNode(final InetAddress IP, final Integer remotePort,
+          final Socket nodeSd) {
         this.IP = IP;
         this.remotePort = remotePort;
         this.nodeSd = nodeSd;
@@ -212,13 +218,9 @@ public class DBalancer {
         }
         //process received add message
         AddMeMessage respond = new AddMeMessage(msgDocument);
+        logger.info("Received an AddMeMessage");
         //send response
-        this.out.println(respond.processAddResponse(this.IP, this.remotePort,
-                                              this.nodeSd, this.out));
-        //initialize state wrapper
-        StateWrapper st = StateWrapper.getInstance();
-        st.setState(new Idle());
-        
+        this.out.println(respond.processAddResponse(this.nodeSd, this.out));
         //set new node to handle this node
         Node nf = new Node(respond.getSenderNodeID());
         nf.run();        
