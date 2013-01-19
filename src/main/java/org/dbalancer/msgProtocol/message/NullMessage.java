@@ -1,8 +1,8 @@
-package dBalancer.msgProtocol.message;
+package main.java.org.dbalancer.msgProtocol.message;
 
 import org.dom4j.Document;
 
-import dBalancer.Helpers;
+import main.java.org.dbalancer.Helpers;
 
 public class NullMessage extends AbstractMessage implements Message {
   @SuppressWarnings("unused")

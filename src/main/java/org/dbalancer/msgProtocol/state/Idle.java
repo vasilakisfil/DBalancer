@@ -1,9 +1,9 @@
-package dBalancer.msgProtocol.state;
+package main.java.org.dbalancer.msgProtocol.state;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 
-import dBalancer.msgProtocol.message.Message;
+import main.java.org.dbalancer.msgProtocol.message.Message;
 
 public class Idle implements State {
   private String response;

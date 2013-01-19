@@ -1,4 +1,4 @@
-package dBalancer;
+package main.java.org.dbalancer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 
 import org.apache.log4j.Logger;
 
-import dBalancer.msgProtocol.state.StateWrapper;
-import dBalancer.overlay.OverlayManager;
+import main.java.org.dbalancer.msgProtocol.state.StateWrapper;
+import main.java.org.dbalancer.overlay.OverlayManager;
 
 
 

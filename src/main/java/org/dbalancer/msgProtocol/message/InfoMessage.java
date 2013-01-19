@@ -1,4 +1,4 @@
-package dBalancer.msgProtocol.message;
+package main.java.org.dbalancer.msgProtocol.message;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,10 +13,10 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import dBalancer.Helpers;
-import dBalancer.Node;
-import dBalancer.overlay.NodeInfo;
-import dBalancer.overlay.OverlayManager;
+import main.java.org.dbalancer.Helpers;
+import main.java.org.dbalancer.Node;
+import main.java.org.dbalancer.overlay.NodeInfo;
+import main.java.org.dbalancer.overlay.OverlayManager;
 
 public class InfoMessage extends AbstractMessage implements Message {
   private final Helpers helper;

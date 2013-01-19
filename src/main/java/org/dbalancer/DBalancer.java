@@ -1,4 +1,4 @@
-package dBalancer;
+package main.java.org.dbalancer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,12 +14,12 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 
-import dBalancer.msgProtocol.message.AddMeMessage;
-import dBalancer.msgProtocol.message.InfoMessage;
-import dBalancer.msgProtocol.state.Idle;
-import dBalancer.msgProtocol.state.Initialization;
-import dBalancer.msgProtocol.state.StateWrapper;
-import dBalancer.overlay.OverlayManager;
+import main.java.org.dbalancer.msgProtocol.message.AddMeMessage;
+import main.java.org.dbalancer.msgProtocol.message.InfoMessage;
+import main.java.org.dbalancer.msgProtocol.state.Idle;
+import main.java.org.dbalancer.msgProtocol.state.Initialization;
+import main.java.org.dbalancer.msgProtocol.state.StateWrapper;
+import main.java.org.dbalancer.overlay.OverlayManager;
 
 
 

@@ -1,12 +1,12 @@
-package dBalancer.msgProtocol.state;
+package main.java.org.dbalancer.msgProtocol.state;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 
-import dBalancer.Helpers;
-import dBalancer.msgProtocol.message.InfoMessage;
-import dBalancer.msgProtocol.message.Message;
-import dBalancer.overlay.OverlayManager;
+import main.java.org.dbalancer.Helpers;
+import main.java.org.dbalancer.msgProtocol.message.InfoMessage;
+import main.java.org.dbalancer.msgProtocol.message.Message;
+import main.java.org.dbalancer.overlay.OverlayManager;
 
 public class Initialization implements State {
   @SuppressWarnings("unused")

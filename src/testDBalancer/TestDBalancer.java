@@ -5,8 +5,8 @@ import java.net.InetAddress;
 import com.sanityinc.jargs.CmdLineParser;
 import com.sanityinc.jargs.CmdLineParser.Option;
 
-import dBalancer.DBalancer;
-import dBalancer.DBlncrException;
+import main.java.org.dbalancer.DBalancer;
+import main.java.org.dbalancer.DBlncrException;
 
 
 public class TestDBalancer {

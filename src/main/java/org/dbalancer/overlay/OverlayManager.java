@@ -1,10 +1,10 @@
-package dBalancer.overlay;
+package main.java.org.dbalancer.overlay;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-import dBalancer.Helpers;
+import main.java.org.dbalancer.Helpers;
 
 public class OverlayManager {
   private static OverlayManager instance;

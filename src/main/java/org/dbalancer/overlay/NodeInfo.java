@@ -1,4 +1,4 @@
-package dBalancer.overlay;
+package main.java.org.dbalancer.overlay;
 
 import java.io.PrintWriter;
 import java.net.InetAddress;

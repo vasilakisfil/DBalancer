@@ -1,4 +1,4 @@
-package dBalancer.msgProtocol.message;
+package main.java.org.dbalancer.msgProtocol.message;
 
 
 public interface Message {

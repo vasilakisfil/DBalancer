@@ -1,8 +1,8 @@
-package dBalancer;
+package main.java.org.dbalancer;
 
 import org.apache.log4j.Logger;
 
-import dBalancer.overlay.OverlayManager;
+import main.java.org.dbalancer.overlay.OverlayManager;
 
 
 public class Coordinator {

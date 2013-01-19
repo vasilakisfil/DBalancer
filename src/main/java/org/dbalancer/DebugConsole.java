@@ -1,4 +1,4 @@
-package dBalancer;
+package main.java.org.dbalancer;
 
 import java.io.BufferedReader;
 import java.io.IOException;

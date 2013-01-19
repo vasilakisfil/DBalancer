@@ -1,4 +1,4 @@
-package dBalancer.msgProtocol.message;
+package main.java.org.dbalancer.msgProtocol.message;
 
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -10,9 +10,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import dBalancer.Helpers;
-import dBalancer.overlay.NodeInfo;
-import dBalancer.overlay.OverlayManager;
+import main.java.org.dbalancer.Helpers;
+import main.java.org.dbalancer.overlay.NodeInfo;
+import main.java.org.dbalancer.overlay.OverlayManager;
 
 //the only message that does not implement the Message interface
 public class AddMeMessage extends AbstractMessage {

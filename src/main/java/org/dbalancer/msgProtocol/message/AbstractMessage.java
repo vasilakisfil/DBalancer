@@ -1,11 +1,11 @@
-package dBalancer.msgProtocol.message;
+package main.java.org.dbalancer.msgProtocol.message;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import dBalancer.Helpers;
-import dBalancer.overlay.OverlayManager;
+import main.java.org.dbalancer.Helpers;
+import main.java.org.dbalancer.overlay.OverlayManager;
 
 public abstract class AbstractMessage {
   @SuppressWarnings("unused")

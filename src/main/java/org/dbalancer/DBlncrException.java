@@ -1,4 +1,4 @@
-package dBalancer;
+package main.java.org.dbalancer;
 
 public class DBlncrException extends Exception {
   private static final long serialVersionUID = -953771317507817206L;

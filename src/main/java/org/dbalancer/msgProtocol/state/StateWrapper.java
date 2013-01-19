@@ -1,14 +1,14 @@
-package dBalancer.msgProtocol.state;
+package main.java.org.dbalancer.msgProtocol.state;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import dBalancer.Coordinator;
-import dBalancer.msgProtocol.message.InfoMessage;
-import dBalancer.msgProtocol.message.Message;
-import dBalancer.msgProtocol.message.NullMessage;
+import main.java.org.dbalancer.Coordinator;
+import main.java.org.dbalancer.msgProtocol.message.InfoMessage;
+import main.java.org.dbalancer.msgProtocol.message.Message;
+import main.java.org.dbalancer.msgProtocol.message.NullMessage;
 
 public class StateWrapper {
   private State currentState;

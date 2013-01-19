@@ -1,8 +1,8 @@
-package dBalancer.msgProtocol.state;
+package main.java.org.dbalancer.msgProtocol.state;
 
 import org.dom4j.Document;
 
-import dBalancer.msgProtocol.message.Message;
+import main.java.org.dbalancer.msgProtocol.message.Message;
 
 public interface State {
   
