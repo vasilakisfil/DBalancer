@@ -1,4 +1,4 @@
-package testDBalancer;
+package main.java.org.dbalancer;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -9,11 +9,12 @@ import main.java.org.dbalancer.DBalancer;
 import main.java.org.dbalancer.DBlncrException;
 
 
-public class TestDBalancer {
+public class StartDBalancer {
   
   private static void printUsage() {
     System.err.println("Usage: OptionTest [{-s, --server | -c, --client}] " +
-        "[{--ip} ip] [{--serverport} port] [{--remoteport} remoteport] " +
+        "[{--serverip} ip] [{--serverport} port]" +
+        "[{--seedip}{--seedport} seedport] " +
         "[{-d --debug}]");
   }
   
@@ -24,9 +25,10 @@ public class TestDBalancer {
     
     Option<Boolean> serverOption = parser.addBooleanOption('s', "Server");
     Option<Boolean> clientOption = parser.addBooleanOption('c', "client");
-    Option<String> ipOption = parser.addStringOption("ip");
-    Option<String> remoteportOption = parser.addStringOption("remoteport");
-    Option<String> serverportOption = parser.addStringOption("serverport");
+    Option<String> serverIpOption = parser.addStringOption("serverip");
+    Option<String> seedIpOption = parser.addStringOption("seedip");
+    Option<String> seedPortOption = parser.addStringOption("seedport");
+    Option<String> serverPortOption = parser.addStringOption("serverport");
     Option<Boolean> debugOption = parser.addBooleanOption('d', "debug");
 
     try {
@@ -40,9 +42,10 @@ public class TestDBalancer {
 
     Boolean server = parser.getOptionValue(serverOption, Boolean.FALSE);
     Boolean client = parser.getOptionValue(clientOption, Boolean.FALSE);
-    String ip = parser.getOptionValue(ipOption);
-    String remoteport = parser.getOptionValue(remoteportOption);
-    String serverport = parser.getOptionValue(serverportOption);
+    String serverIp = parser.getOptionValue(serverIpOption);
+    String seedIp = parser.getOptionValue(seedIpOption);
+    String seedPort = parser.getOptionValue(seedPortOption);
+    String serverPort = parser.getOptionValue(serverPortOption);
     Boolean debug = parser.getOptionValue(debugOption, Boolean.FALSE);
     
     if (server.equals(Boolean.FALSE) && client.equals(Boolean.FALSE)) {
@@ -50,17 +53,19 @@ public class TestDBalancer {
       System.exit(2);
     }
     if (server.equals(Boolean.TRUE)) {
-      if (remoteport != null) {
-        System.err.println("Ignoring remoteport in server mode");
+      if (seedPort != null) {
+        System.err.println("Ignoring seedport in server mode");
       }
       
-      dBlncr.start(InetAddress.getByName(ip), Integer.valueOf(serverport),
+      dBlncr.start(InetAddress.getByName(serverIp), Integer.valueOf(serverPort),
                     debug);      
     }
     else {      
       try {
-        dBlncr.start(InetAddress.getByName(ip), Integer.valueOf(remoteport),
-                      Integer.valueOf(serverport), debug);
+        dBlncr.start(InetAddress.getByName(serverIp),
+                      Integer.valueOf(serverPort),
+                      InetAddress.getByName(seedIp),
+                      Integer.valueOf(seedPort), debug);
       } catch (DBlncrException e) {
         System.out.println("Could not connect to server");
         e.printStackTrace();

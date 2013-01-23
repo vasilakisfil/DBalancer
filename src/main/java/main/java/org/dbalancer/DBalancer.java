@@ -33,7 +33,7 @@ public class DBalancer {
     this.om = OverlayManager.getInstance();
     this.coo = Coordinator.getInstance();
     // BasicConfigurator replaced with PropertyConfigurator.
-    PropertyConfigurator.configure("../log4j.properties");
+    PropertyConfigurator.configure("src/main/resources/log4j.properties");
   }
   
   public void start(final InetAddress IP, final Integer serverPort,
@@ -48,12 +48,13 @@ public class DBalancer {
     coo.start();
   }
   
-  public void start(final InetAddress IP, final Integer remotePort,
-      final Integer serverPort, final Boolean debug) throws DBlncrException {
-    this.om.setMyInfo(IP, serverPort);
+  public void start(final InetAddress serverIP, final Integer serverPort,
+      final InetAddress seedIP, final Integer seedPort,
+      final Boolean debug) throws DBlncrException {
+    this.om.setMyInfo(serverIP, serverPort);
     //initialize (retrieve other servers)
-    this.initializeClient(IP, remotePort);
-    this.initialize(IP, serverPort, debug);
+    this.initializeClient(seedIP, seedPort);
+    this.initialize(serverIP, serverPort, debug);
     //initiate Coordinator
     coo.start();
     
